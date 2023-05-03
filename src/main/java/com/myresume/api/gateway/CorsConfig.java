@@ -23,7 +23,7 @@ public class CorsConfig {
         corsConfiguration.setAllowedOrigins(Collections.singletonList(clientURL));
         corsConfiguration.setAllowedMethods(Arrays.asList("HEAD", "GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         corsConfiguration.setAllowCredentials(true);
-        corsConfiguration.setExposedHeaders(Arrays.asList("Authorization", "token", "userId"));
+        corsConfiguration.setExposedHeaders(Arrays.asList("Authorization", "token", "userId", "role"));
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", corsConfiguration);
