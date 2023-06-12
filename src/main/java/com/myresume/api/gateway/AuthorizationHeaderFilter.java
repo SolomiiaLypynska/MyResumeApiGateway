@@ -1,5 +1,6 @@
 package com.myresume.api.gateway;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
@@ -11,6 +12,8 @@ import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
+
+import java.util.Date;
 
 @Component
 public class AuthorizationHeaderFilter extends AbstractGatewayFilterFactory<AuthorizationHeaderFilter.Config> {
@@ -57,18 +60,21 @@ public class AuthorizationHeaderFilter extends AbstractGatewayFilterFactory<Auth
     private boolean isJwtValid(String jwt) {
         boolean returnValue = true;
         String subject = null;
+        Date expirationDate = null;
+        Date currentDate = new Date();
 
         try {
-            subject = Jwts.parser()
+            Claims claims = Jwts.parser()
                     .setSigningKey(tokenSecret)
                     .parseClaimsJws(jwt)
-                    .getBody()
-                    .getSubject();
+                    .getBody();
+
+            subject = claims.getSubject();
+            expirationDate = claims.getExpiration();
         } catch (Exception e) {
             returnValue = false;
         }
-
-        if (subject == null || subject.isEmpty()) {
+        if (subject == null || subject.isEmpty() || expirationDate == null || expirationDate.before(currentDate)) {
             returnValue = false;
         }
         return returnValue;
